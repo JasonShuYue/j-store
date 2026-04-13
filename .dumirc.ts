@@ -16,7 +16,7 @@ export default defineConfig({
     { id: 'zh-CN', name: '中文' },
     { id: 'en-US', name: 'EN' },
   ],
-  favicons: [publicPath + 'logo-fill-64x64.png'],
+  favicons: [publicPath + 'logo-fill_100.png'],
   themeConfig: {
     logo: publicPath + 'logo-fill_100.png',
     name: 'React Model Store',
