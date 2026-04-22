@@ -36,3 +36,15 @@ export interface IDispatchOptions {
 
 // 选择器函数类型
 export type TSelectorFn<TState> = (state: TState) => Partial<TState>;
+
+export interface IDispatchOptions {
+  silent?: boolean;
+}
+
+export interface IModelConfig<
+  TState extends Record<string, any> = Record<string, any>,
+  TEffects extends Record<string, any> = Record<string, any>,
+> {
+  state: TState;
+  effects?: Partial<TEffects>;
+}
