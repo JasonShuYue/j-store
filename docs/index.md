@@ -1,3 +1,3 @@
-## 基础 Model 演示
+## computed
 
-<code src="../src/UseGetState/index.tsx"></code>
+<code src="../src/ComputedDemo/index.tsx"></code>

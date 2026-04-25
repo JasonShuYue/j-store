@@ -1,8 +1,13 @@
 import { useCallback } from 'react';
 import useSyncExternalStoreExports from 'use-sync-external-store/shim/with-selector';
 import { useMemoizedFn } from './hooks';
-import type { IDispatchOptions, IModelConfig, TEqualityFn } from './type';
-import { shallowEqualKeys } from './utils';
+import type {
+  IDispatchOptions,
+  IModelConfig,
+  TComputed,
+  TEqualityFn,
+} from './type';
+import { calcComputedState, shallowEqualKeys } from './utils';
 
 const { useSyncExternalStoreWithSelector } = useSyncExternalStoreExports;
 
@@ -21,12 +26,18 @@ export class Model<
   _subscribes: TSubscribeFunc<TState, TEffects>[] = [];
   _isInited = false;
 
+  effects?: Partial<TEffects>;
+  computed?: TComputed<TState>; // 🆕 新增：计算属性配置
+
   constructor(public config: IModelConfig<TState, TEffects>) {}
 
   init() {
     if (!this._isInited) {
       this._isInited = true;
-      this.state = { ...this.config.state };
+      const config = this.config;
+
+      // 🆕 使用 getActualState 处理初始状态（包含计算属性）
+      this.state = this.getActualState({} as TState, config.state || {});
       this._preState = { ...this.state };
     }
   }
@@ -47,11 +58,18 @@ export class Model<
     }
 
     if (state) {
+      // 1. 处理函数形式的state
+      let payload: Partial<TState>;
       if (typeof state === 'function') {
-        this.state = { ...this._preState, ...state(this.state) };
+        payload = state(this.state);
       } else {
-        this.state = { ...this._preState, ...state };
+        payload = state;
       }
+
+      // 🆕 2. 使用getActualState处理状态（包含计算属性）
+      this.state = this.getActualState(this._preState, payload);
+
+      // 3. 分发更新
       this.dispatch(options);
       this._preState = { ...this.state };
     }
@@ -121,4 +139,29 @@ export class Model<
       return false;
     });
   };
+
+  // 🆕 新增：getActualState方法（源码中的核心方法）
+  getActualState(prevState: TState, payload: Partial<TState>): TState {
+    // 1. 合并状态
+    let nextState = { ...prevState, ...payload };
+
+    // 2. 获取配置
+    const { computed } = this.config || {};
+
+    // 🆕 3. 处理计算属性
+    nextState = calcComputedState<TState>({
+      prevState,
+      nextState,
+      computed,
+    });
+
+    // 4. 执行 watch（后续章节会实现）
+    // execWatchHandler({
+    //   prevState,
+    //   nextState,
+    //   watch,
+    // });
+
+    return nextState;
+  }
 }
