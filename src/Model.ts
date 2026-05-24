@@ -7,7 +7,7 @@ import type {
   TComputed,
   TEqualityFn,
 } from './type';
-import { calcComputedState, shallowEqualKeys } from './utils';
+import { calcComputedState, execWatchHandler, shallowEqualKeys } from './utils';
 
 const { useSyncExternalStoreWithSelector } = useSyncExternalStoreExports;
 
@@ -146,7 +146,7 @@ export class Model<
     let nextState = { ...prevState, ...payload };
 
     // 2. 获取配置
-    const { computed } = this.config || {};
+    const { watch, computed } = this.config || {};
 
     // 🆕 3. 处理计算属性
     nextState = calcComputedState<TState>({
@@ -155,12 +155,12 @@ export class Model<
       computed,
     });
 
-    // 4. 执行 watch（后续章节会实现）
-    // execWatchHandler({
-    //   prevState,
-    //   nextState,
-    //   watch,
-    // });
+    // 4. 执行 watch
+    execWatchHandler({
+      prevState,
+      nextState,
+      watch,
+    });
 
     return nextState;
   }

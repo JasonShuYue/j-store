@@ -1,3 +1,1 @@
-## computed
-
-<code src="../src/ComputedDemo/index.tsx"></code>
+<code src="../src/WatchDemo/index.tsx"></code>

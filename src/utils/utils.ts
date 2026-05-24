@@ -1,4 +1,4 @@
-import type { TComputed } from '../type';
+import type { TComputed, TWatch } from '../type';
 
 // src/utils.ts - 在现有工具函数基础上添加
 interface IComputedConfig<TState extends Record<string, any>> {
@@ -55,4 +55,59 @@ export function calcComputedState<TState extends Record<string, any>>({
   }
 
   return updatedState;
+}
+
+// 🆕 新增：计算字段差异的函数（源码中的实现）
+export function calcDiffKeys(
+  obj1: object,
+  obj2: object,
+  keys: (string | number | symbol)[],
+) {
+  const diffKeysMap: Record<string | number | symbol, boolean> = {};
+  let diff = false;
+
+  keys.forEach((key) => {
+    // @ts-ignore
+    if (!Object.is(obj1[key], obj2[key])) {
+      diffKeysMap[key] = true;
+      diff = true;
+    }
+  });
+
+  return {
+    diffKeysMap, // 变化字段的映射
+    diff, // 是否有变化
+  };
+}
+
+// 🆕 新增：执行Watch处理函数（源码中的实现）
+interface IWatchConfig<TState extends Record<string, any>> {
+  prevState: TState;
+  nextState: TState;
+  watch?: TWatch<TState>;
+}
+export function execWatchHandler<TState extends Record<string, any>>({
+  prevState,
+  nextState,
+  watch,
+}: IWatchConfig<TState>) {
+  if (watch) {
+    watch.forEach((watchItem) => {
+      if (watchItem.keys) {
+        // 检查监听的字段是否发生变化
+        const { diffKeysMap, diff } = calcDiffKeys(
+          prevState,
+          nextState,
+          watchItem.keys,
+        );
+
+        // 只有监听的字段发生变化时才执行handler
+        if (diff) {
+          // 执行Watch处理函数
+          watchItem.handler &&
+            watchItem.handler(nextState, prevState, diffKeysMap);
+        }
+      }
+    });
+  }
 }

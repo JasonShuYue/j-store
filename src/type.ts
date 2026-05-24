@@ -48,4 +48,5 @@ export interface IModelConfig<
   state: TState;
   effects?: Partial<TEffects>;
   computed?: TComputed<TState>;
+  watch?: TWatch<TState>;
 }
