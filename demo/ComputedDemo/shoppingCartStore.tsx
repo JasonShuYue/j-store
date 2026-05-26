@@ -1,5 +1,5 @@
 // shoppingCartStore.ts
-import { Model } from '../Model';
+import { Model } from '../../src/Model';
 
 // 商品接口
 interface Product {

@@ -1,5 +1,5 @@
 // userStore.ts
-import { Model } from '../Model';
+import { Model } from '../../src/Model';
 
 // 用户接口
 interface User {

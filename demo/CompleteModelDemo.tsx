@@ -1,6 +1,6 @@
 // src/CompleteModelDemo.tsx
 import React, { useEffect } from 'react';
-import { Model } from './Model';
+import { Model } from '../src/Model';
 
 // 定义一个复杂的状态接口
 interface AppState {

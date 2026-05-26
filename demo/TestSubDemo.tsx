@@ -1,6 +1,6 @@
 // src/TestSubDemo.tsx
 import React, { useEffect } from 'react';
-import { Model } from './Model';
+import { Model } from '../src/Model';
 const counter = new Model({ count: 0 });
 export default function BasicModelDemo() {
   useEffect(() => {

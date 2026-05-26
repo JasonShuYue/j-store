@@ -1,6 +1,6 @@
 // src/TypeSafeModelDemo.tsx
 import React, { useEffect } from 'react';
-import { Model } from './Model';
+import { Model } from '../src/Model';
 
 // 定义状态接口
 interface CounterState {

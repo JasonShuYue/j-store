@@ -1,4 +1,4 @@
-import { Model } from '../Model';
+import { Model } from '../../src/Model';
 
 // 主题状态接口
 interface ThemeState {

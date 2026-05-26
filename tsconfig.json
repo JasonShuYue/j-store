@@ -12,5 +12,18 @@
       "j-store/*": ["src/*", "*"]
     }
   },
-  "include": [".dumirc.ts", ".fatherrc.ts", "src/**/*"]
+  "include": [
+    ".dumirc.ts",
+    ".fatherrc.ts",
+    "src/**/*",
+    "demo/AsyncDemo",
+    "demo/ComputedDemo",
+    "demo/WatchDemo",
+    "demo/BasicModelDemo.tsx",
+    "demo/CompleteModelDemo.tsx",
+    "demo/SubscriptionDemo.tsx",
+    "demo/TestSubDemo.tsx",
+    "demo/TypeSafeModelDemo.tsx",
+    "demo/UpdateModelDemo.tsx"
+  ]
 }

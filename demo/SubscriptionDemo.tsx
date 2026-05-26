@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Model } from './Model';
+import { Model } from '../src/Model';
 
 interface CounterState {
   count: number;

@@ -1,6 +1,6 @@
 // src/UpdateModelDemo.tsx
 import React, { useEffect } from 'react';
-import { Model } from './Model';
+import { Model } from '../src/Model';
 
 export default function UpdateModelDemo() {
   useEffect(() => {

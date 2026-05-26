@@ -1,3 +1,3 @@
-<!-- <code src="../src/WatchDemo/index.tsx"></code> -->
+<!-- <code src="../demo/WatchDemo/index.tsx"></code> -->
 
-<code src="../src/AsyncDemo/index.tsx"></code>
+<code src="../demo/AsyncDemo/index.tsx"></code>
