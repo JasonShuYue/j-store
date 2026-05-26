@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 import useSyncExternalStoreExports from 'use-sync-external-store/shim/with-selector';
+import type { AsyncManagerOptions } from './Manager/AsyncManager';
+import { AsyncManager } from './Manager/AsyncManager';
 import { useMemoizedFn } from './hooks';
 import type {
   IDispatchOptions,
@@ -28,6 +30,19 @@ export class Model<
 
   effects?: Partial<TEffects>;
   computed?: TComputed<TState>; // 🆕 新增：计算属性配置
+  asyncManagerMap: Record<
+    string,
+    AsyncManager<
+      Partial<TState>,
+      (
+        aborts: {
+          lastAbortController: AbortController | null;
+          abortController: AbortController;
+        },
+        tryCount: number,
+      ) => Promise<Partial<TState>>
+    >
+  > = {};
 
   constructor(public config: IModelConfig<TState, TEffects>) {}
 
@@ -163,5 +178,62 @@ export class Model<
     });
 
     return nextState;
+  }
+
+  // 🆕 新增：asyncManager方法（源码中的实现）
+  asyncManager(
+    name: string,
+    options?: {
+      loadingKey?: string;
+      errorKey?: string;
+      config?: AsyncManagerOptions;
+      showLoading?: boolean;
+    },
+  ) {
+    const {
+      loadingKey = 'loading',
+      errorKey = 'error',
+      showLoading = true,
+      config,
+    } = options || {};
+
+    // 如果不存在，创建新的AsyncManager
+    if (!this.asyncManagerMap[name]) {
+      this.asyncManagerMap[name] = new AsyncManager(config);
+    }
+
+    const asyncManager = this.asyncManagerMap[name];
+
+    // 🎯 关键：清除之前的监听器，重新绑定
+    asyncManager.offAllListeners();
+
+    // 🎯 绑定loading事件
+    asyncManager.on('loading', () => {
+      if (showLoading) {
+        this.setState({
+          [loadingKey]: true,
+        } as Partial<TState>);
+      }
+    });
+
+    // 🎯 绑定success事件
+    asyncManager.on('success', (result) => {
+      if (typeof result === 'object' && result !== null) {
+        this.setState({
+          [loadingKey]: false,
+          ...result, // 🎯 关键：将结果合并到状态中
+        } as Partial<TState>);
+      }
+    });
+
+    // 🎯 绑定error事件
+    asyncManager.on('error', (error) => {
+      this.setState({
+        [loadingKey]: false,
+        [errorKey]: error,
+      } as Partial<TState>);
+    });
+
+    return this.asyncManagerMap[name];
   }
 }
